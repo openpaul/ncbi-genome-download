@@ -193,9 +193,6 @@ def config_download(config):
         mtable = metadata.get()
         if config.parallel == 1:
             for entry, group in download_candidates:
-                if entry['ftp_path'] == "na":
-                    logger.warning("Entry %r has no ftp directory listed, skipping", entry['assembly_accession'])
-                    continue
                 curr_jobs = create_downloadjob(entry, group, config)
                 fill_metadata(curr_jobs, entry, mtable)
                 download_jobs.extend(curr_jobs)
@@ -323,6 +320,10 @@ def filter_entries(entries, config):
             logger.debug('Skipping entry with refseq_category %r, not %r', entry['refseq_category'],
                           config.refseq_category)
             continue
+        if entry['ftp_path'] == "na":
+            logger.warning("Skipping entry, as it has no ftp directory listed: %r", entry['assembly_accession'])
+            continue
+
         new_entries.append(entry)
 
     return new_entries
